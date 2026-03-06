@@ -1,0 +1,4 @@
+# Vue/Vite specific
+*.tsbuildinfo
+.vscode/*
+!.vscode/extensions.json

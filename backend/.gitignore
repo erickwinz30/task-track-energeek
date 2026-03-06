@@ -1,0 +1,13 @@
+# Laravel specific
+/vendor
+/bootstrap/cache
+/storage/*.key
+/storage/pail
+/storage/logs
+/public/hot
+/public/storage
+/public/build
+.phpunit.result.cache
+.phpunit.cache
+Homestead.json
+Homestead.yaml

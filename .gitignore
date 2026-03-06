@@ -1,0 +1,48 @@
+# Environment
+.env
+.env.*.local
+.env.backup
+.env.production
+
+# IDE & Editors
+.vscode
+.idea
+.fleet
+.nova
+.zed
+*.swp
+*.swo
+*~
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Dependencies & Lock files
+node_modules/
+pnpm-lock.yaml
+package-lock.json
+composer.lock
+
+# Build & Dist
+dist
+dist-ssr
+build
+
+# Logs
+*.log
+logs
+
+# Testing
+coverage
+__screenshots__
+
+# Misc
+*.local
+.phpactor.json
+.eslintcache
+auth.json
