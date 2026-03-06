@@ -29,7 +29,6 @@ Pastikan struktur `frontend/src/` sesuai panduan:
 - [ ] Login menggunakan Email & Password.
 - [ ] **Tidak ada fitur Register** (User admin dibuat via Seeder).
 - [ ] Logout harus **revoke token** aktif di backend.
-- [ ] Token disimpan di frontend (localStorage/Pinia) dan dikirim via Header `Authorization: Bearer <token>`.
 
 ## 📦 Fitur & Logika Bisnis
 
