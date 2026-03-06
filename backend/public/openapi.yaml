@@ -1,0 +1,296 @@
+openapi: 3.0.3
+info:
+  title: Task Tracker API
+  version: 1.0.0
+  description: |
+    Dokumentasi API untuk Task Tracker.
+
+    Authentication menggunakan Bearer Token (Laravel Sanctum Personal Access Token).
+servers:
+  - url: http://localhost:8000/api
+    description: Local development
+
+tags:
+  - name: Auth
+    description: Login, logout, dan user info
+  - name: Dashboard
+    description: Data ringkasan dashboard
+
+paths:
+  /login:
+    post:
+      tags: [Auth]
+      summary: Login user
+      description: Login menggunakan email dan password, lalu mengembalikan access token.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+            examples:
+              valid:
+                value:
+                  email: admin@energeek.id
+                  password: password123
+      responses:
+        "200":
+          description: Login berhasil
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginSuccessResponse"
+        "422":
+          description: Validasi gagal atau kredensial tidak valid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationErrorResponse"
+
+  /logout:
+    post:
+      tags: [Auth]
+      summary: Logout user
+      description: Revoke token yang sedang digunakan.
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Logout berhasil
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicSuccessResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        "500":
+          description: Gagal logout
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LogoutErrorResponse"
+
+  /user:
+    get:
+      tags: [Auth]
+      summary: Get current user
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Data user berhasil diambil
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+
+  /dashboard:
+    get:
+      tags: [Dashboard]
+      summary: Get dashboard summary
+      description: |
+        Mengembalikan ringkasan dashboard:
+        - jumlah project aktif
+        - jumlah task belum selesai
+        - maksimal 5 task terdekat berdasarkan due_date
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Data dashboard berhasil diambil
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Token
+
+  schemas:
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+          example: admin@energeek.id
+        password:
+          type: string
+          minLength: 6
+          example: password123
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Admin Energeek
+        email:
+          type: string
+          format: email
+          example: admin@energeek.id
+        is_admin:
+          type: boolean
+          example: true
+
+    LoginData:
+      type: object
+      properties:
+        user:
+          $ref: "#/components/schemas/User"
+        token:
+          type: string
+          example: 1|gV0fQfexampletoken
+        token_type:
+          type: string
+          example: Bearer
+
+    LoginSuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Login berhasil.
+        data:
+          $ref: "#/components/schemas/LoginData"
+
+    ValidationErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: Validasi gagal.
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          example:
+            email:
+              - Email wajib diisi.
+
+    BasicSuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Logout berhasil.
+
+    LogoutErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: Gagal logout. Silakan coba lagi.
+        errors:
+          type: object
+          properties:
+            general:
+              type: array
+              items:
+                type: string
+              example:
+                - Terjadi kesalahan saat logout.
+
+    UserResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          $ref: "#/components/schemas/User"
+
+    DashboardTask:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 10
+        title:
+          type: string
+          example: Integrasi Payment Gateway
+        subtitle:
+          type: string
+          example: Website E-Commerce
+        due_date:
+          type: string
+          format: date
+          example: 2026-03-10
+        due_text:
+          type: string
+          example: Besok
+        urgency:
+          type: string
+          enum: [danger, warning, normal]
+          example: warning
+
+    DashboardData:
+      type: object
+      properties:
+        active_projects_count:
+          type: integer
+          example: 8
+        pending_tasks_count:
+          type: integer
+          example: 44
+        upcoming_tasks:
+          type: array
+          items:
+            $ref: "#/components/schemas/DashboardTask"
+
+    DashboardResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Data dashboard berhasil diambil.
+        data:
+          $ref: "#/components/schemas/DashboardData"
+
+    UnauthorizedResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Unauthenticated.

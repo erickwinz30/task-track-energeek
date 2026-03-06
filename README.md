@@ -47,6 +47,13 @@ Frontend berjalan di `http://localhost:5173`.
 - `GET /api/user` (auth)
 - `GET /api/dashboard` (auth)
 
+## Swagger API Docs
+
+- OpenAPI spec: `backend/public/openapi.yaml`
+- Swagger UI: `http://localhost:8000/swagger.html`
+
+Pastikan backend Laravel sedang berjalan sebelum membuka Swagger UI.
+
 ## Testing
 
 Backend:
